@@ -34,14 +34,14 @@
 <script>
   if(!sessionStorage.getItem('sp_user')) location.href='login.html';
   const words = ['computer','internet','variable','function','document','keyboard','monitor','program','memory','network','algorithm','array','object','server','client','compile','execute','binary','syntax','debug'];
-  let timerEl = document.getElementById('timer');
-  let wordBox = document.getElementById('wordBox');
-  let typeInput = document.getElementById('typeInput');
-  let scoreEl = document.getElementById('score');
-  let submitBtn = document.getElementById('submitBtn');
-  let quitBtn = document.getElementById('quitBtn');
+  const timerEl = document.getElementById('timer');
+  const wordBox = document.getElementById('wordBox');
+  const typeInput = document.getElementById('typeInput');
+  const scoreEl = document.getElementById('score');
+  const submitBtn = document.getElementById('submitBtn');
+  const quitBtn = document.getElementById('quitBtn');
 
-  let time = 60, score=0;
+  let time = 60, score = 0;
   let current = '';
 
   function nextWord(){
@@ -51,10 +51,10 @@
     typeInput.focus();
   }
 
-  let interval = setInterval(()=> {
+  const interval = setInterval(()=> {
     time--;
     timerEl.textContent = time;
-    if(time<=0) endTimeout();
+    if(time <= 0) endTimeout();
   },1000);
 
   function endTimeout(){
@@ -63,7 +63,7 @@
     window.spHelpers.gameEnd(false,'Time up');
   }
 
-  submitBtn.addEventListener('click', ()=>{
+  function submitAction(){
     const t = typeInput.value.trim().toLowerCase();
     if(!t) return;
     if(t === current.toLowerCase()){
@@ -73,6 +73,11 @@
       typeInput.value='';
       typeInput.focus();
     }
+  }
+
+  submitBtn.addEventListener('click', submitAction);
+  typeInput.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter') submitAction();
   });
 
   quitBtn.addEventListener('click', ()=> {
