@@ -1,105 +1,81 @@
-/* ===== Login Page ===== */
-function handleLogin() {
-    const username = document.getElementById("username").value.trim();
-    if (!username) {
-        alert("Please enter your username.");
-        return;
-    }
-    sessionStorage.setItem("sp_user", username);
-    window.location.href = "index.html";
-}
+const wheelCanvas = document.getElementById('wheelCanvas');
+const ctx = wheelCanvas.getContext('2d');
+const spinBtn = document.getElementById('spinBtn');
+const resultText = document.getElementById('result');
 
-/* ===== Spinner Page ===== */
-let spinning = false;
-let spinAngle = 0;
+const segments = ["Game 1", "Game 2", "Game 3", "Game 4", "Game 5"];
+const colors = ["#FF5733", "#33FF57", "#3357FF", "#F333FF", "#FFC300"];
+
+let startAngle = 0;
+let arc = Math.PI / (segments.length / 2);
 let spinTimeout = null;
-let games = [
-    { name: "Speed Typing", file: "color.html" },
-    { name: "Memory Game", file: "memory.html" },
-    { name: "Quiz Game", file: "quiz.html" },
-    { name: "Math Challenge", file: "math.html" },
-    { name: "Puzzle Game", file: "puzzle.html" }
-];
+let spinAngleStart = 0;
+let spinTime = 0;
+let spinTimeTotal = 0;
 
+// Draw the wheel
 function drawWheel() {
-    const canvas = document.getElementById("wheelCanvas");
-    const ctx = canvas.getContext("2d");
-    const numSegments = games.length;
-    const arc = (2 * Math.PI) / numSegments;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < numSegments; i++) {
-        let angle = i * arc;
+    ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+    for (let i = 0; i < segments.length; i++) {
+        const angle = startAngle + i * arc;
+        ctx.fillStyle = colors[i];
         ctx.beginPath();
-        ctx.moveTo(canvas.width / 2, canvas.height / 2);
-        ctx.arc(canvas.width / 2, canvas.height / 2, 150, angle, angle + arc, false);
-        ctx.closePath();
-        ctx.fillStyle = i % 2 === 0 ? "#ffcc00" : "#ffeb99";
+        ctx.moveTo(200, 200);
+        ctx.arc(200, 200, 200, angle, angle + arc, false);
+        ctx.lineTo(200, 200);
         ctx.fill();
-        ctx.stroke();
 
         ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.translate(200, 200);
         ctx.rotate(angle + arc / 2);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#000";
-        ctx.font = "bold 14px Arial";
-        ctx.fillText(games[i].name, 140, 10);
+        ctx.fillStyle = "white";
+        ctx.font = "bold 16px Arial";
+        ctx.fillText(segments[i], 110, 10);
         ctx.restore();
     }
+    // Arrow
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+    ctx.moveTo(200 - 10, 0);
+    ctx.lineTo(200 + 10, 0);
+    ctx.lineTo(200, 40);
+    ctx.fill();
 }
 
-function spinWheel() {
-    if (spinning) return;
-    spinning = true;
-    let spins = Math.floor(Math.random() * 5) + 5; // 5 to 9 spins
-    let finalAngle = Math.random() * 360;
-    let totalRotation = (spins * 360) + finalAngle;
-    let currentRotation = 0;
-
-    let spinInterval = setInterval(() => {
-        currentRotation += 20;
-        spinAngle = currentRotation;
-        drawRotatedWheel(spinAngle);
-        if (currentRotation >= totalRotation) {
-            clearInterval(spinInterval);
-            spinning = false;
-            goToSelectedGame(spinAngle);
-        }
-    }, 20);
-}
-
-function drawRotatedWheel(angle) {
-    const canvas = document.getElementById("wheelCanvas");
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate(angle * Math.PI / 180);
-    ctx.translate(-canvas.width / 2, -canvas.height / 2);
-    drawWheel();
-    ctx.restore();
-}
-
-function goToSelectedGame(angle) {
-    let segmentAngle = 360 / games.length;
-    let selectedIndex = Math.floor(((360 - (angle % 360)) % 360) / segmentAngle);
-    let selectedGame = games[selectedIndex];
-
-    setTimeout(() => {
-        showGameInstructions(selectedGame);
-    }, 500);
-}
-
-function showGameInstructions(game) {
-    alert(`You got "${game.name}"! Click OK to start.`);
-    window.location.href = game.file;
-}
-
-/* ===== Page Loads ===== */
-window.onload = function () {
-    if (document.getElementById("wheelCanvas")) {
-        drawWheel();
+// Spin animation
+function rotateWheel() {
+    spinTime += 30;
+    if (spinTime >= spinTimeTotal) {
+        stopRotateWheel();
+        return;
     }
-};
+    const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+    startAngle += (spinAngle * Math.PI / 180);
+    drawWheel();
+    spinTimeout = setTimeout(rotateWheel, 30);
+}
+
+// Ease out function for smooth stop
+function easeOut(t, b, c, d) {
+    const ts = (t /= d) * t;
+    const tc = ts * t;
+    return b + c * (tc + -3 * ts + 3 * t);
+}
+
+function stopRotateWheel() {
+    clearTimeout(spinTimeout);
+    const degrees = startAngle * 180 / Math.PI + 90;
+    const arcd = arc * 180 / Math.PI;
+    const index = Math.floor((360 - (degrees % 360)) / arcd);
+    resultText.innerText = "You got: " + segments[index];
+}
+
+spinBtn.addEventListener("click", () => {
+    spinAngleStart = Math.random() * 10 + 10;
+    spinTime = 0;
+    spinTimeTotal = Math.random() * 3000 + 4000;
+    rotateWheel();
+});
+
+// Initial draw
+drawWheel();
