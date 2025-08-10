@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Color Game</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-bg">
+  <main class="centered-container game-page">
+    <div class="game-card card">
+      <div class="game-header" style="width:100%;">
+        <div><h2>Color Game</h2><p class="note">Type the <strong>font color name</strong> (not the word)</p></div>
+        <div class="timer" id="timer">60</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;">
+        <div id="displayWord" style="font-size:40px;font-weight:700;"></div>
+        <input id="answer" placeholder="Type color name (e.g. blue)" style="padding:10px;border-radius:8px;border:1px solid #dbe7ff;width:320px" />
+        <div class="note">Score: <span id="score">0</span></div>
+        <div style="margin-top:8px">
+          <button id="submitBtn" class="btn primary">Submit</button>
+          <button id="quitBtn" class="btn">Quit</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+  if(!sessionStorage.getItem('sp_user')) location.href='login.html';
+  const colors = ['red','blue','green','yellow','purple','orange','brown','black','pink','teal'];
+  let timerEl = document.getElementById('timer');
+  let display = document.getElementById('displayWord');
+  let answerEl = document.getElementById('answer');
+  let scoreEl = document.getElementById('score');
+  let submitBtn = document.getElementById('submitBtn');
+  let quitBtn = document.getElementById('quitBtn');
+
+  let time = 60, score=0, currentColor='';
+
+  // show instruction animation BEFORE start: check URL param to show popup?
+  // We assume spinner already showed instructions and navigated here on Start.
+
+  function nextWord(){
+    const text = colors[Math.floor(Math.random()*colors.length)];
+    // choose a different color for font
+    let font;
+    do{ font = colors[Math.floor(Math.random()*colors.length)]; } while(font===text);
+    display.textContent = text;
+    display.style.color = font;
+    currentColor = font;
+    answerEl.value='';
+    answerEl.focus();
+  }
+
+  // timer
+  let interval = null;
+  function startGame(){
+    nextWord();
+    interval = setInterval(()=> {
+      time--;
+      timerEl.textContent = time;
+      if(time<=0) endTimeout();
+    },1000);
+  }
+
+  function endTimeout(){
+    clearInterval(interval);
+    answerEl.disabled = true;
+    submitBtn.disabled = true;
+    // show fail and return to spinner
+    window.spHelpers.gameEnd(false, 'Time up');
+  }
+
+  submitBtn.addEventListener('click', ()=>{
+    const val = answerEl.value.trim().toLowerCase();
+    if(!val) return;
+    if(val === currentColor){
+      score++;
+      scoreEl.textContent = score;
+      // small success animation
+      display.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:300});
+      nextWord();
+    } else {
+      // minor shake
+      answerEl.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:350});
+      answerEl.value='';
+      answerEl.focus();
+    }
+  });
+
+  quitBtn.addEventListener('click', ()=> {
+    clearInterval(interval);
+    window.location='index.html';
+  });
+
+  // start when the page loads
+  window.addEventListener('load', startGame);
+</script>
+</body>
+</html>
