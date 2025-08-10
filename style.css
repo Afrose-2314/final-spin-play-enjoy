@@ -1,129 +1,55 @@
-/* ===== GLOBAL RESET ===== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* ===== BODY & BACKGROUND ===== */
 body {
-    font-family: Arial, sans-serif;
-    background: url('842c22ac-2e76-40ac-b559-0a5451191767.png') no-repeat center center fixed;
-    background-size: cover;
-    color: #fff;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('bg.jpg'); /* Replace with your image file */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* This makes it fixed on scroll */
+  color: white;
 }
 
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: -1;
+.container {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
 }
 
-/* ===== CONTAINER ===== */
-.centered-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
+h1 {
+  margin-bottom: 10px;
 }
 
-/* ===== CARD STYLE ===== */
-.card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    border-radius: 16px;
-    padding: 24px;
-    max-width: 500px;
-    width: 90%;
-    box-shadow: 0 4px 30px rgba(0,0,0,0.3);
-    animation: fadeIn 1s ease-in-out;
+#word {
+  font-size: 2rem;
+  margin: 10px 0;
 }
 
-/* ===== HEADINGS ===== */
-h1, h2, h3 {
-    margin-bottom: 16px;
-    font-weight: bold;
+input {
+  padding: 10px;
+  font-size: 1rem;
+  width: 80%;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
 }
 
-/* ===== BUTTONS ===== */
-.btn {
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin: 5px;
-    transition: all 0.3s ease-in-out;
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  background: #ff9800;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.btn.primary {
-    background: linear-gradient(45deg, #ff6b6b, #f7d794);
-    color: #000;
-    font-weight: bold;
-}
-
-.btn.primary:hover {
-    transform: scale(1.05);
-    background: linear-gradient(45deg, #ff4757, #feca57);
-}
-
-.btn.secondary {
-    background: rgba(255,255,255,0.3);
-    color: #fff;
-}
-
-.btn.secondary:hover {
-    background: rgba(255,255,255,0.5);
-}
-
-/* ===== INPUT FIELDS ===== */
-input[type="text"], input[type="password"], input[type="email"] {
-    width: 80%;
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    margin: 8px 0;
-    font-size: 16px;
-    outline: none;
-    background: rgba(255,255,255,0.8);
-}
-
-/* ===== GAME TIMER & SCORE ===== */
-.timer {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.score-display {
-    font-size: 20px;
-    margin-top: 10px;
-}
-
-/* ===== TYPE BOX ===== */
-.type-box {
-    font-size: 24px;
-    padding: 16px;
-    border-radius: 12px;
-    background: #fff;
-    color: #000;
-    border: 1px solid #e8f1ff;
-    width: 80%;
-    text-align: center;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+button:hover {
+  background: #e68900;
 }
