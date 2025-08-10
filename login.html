@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SpinPlayEnjoy — Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-bg">
+  <main class="centered-container">
+    <div class="card login-card">
+      <h1 class="brand">Prince Shri Venkateshwara Arts & Science College</h1>
+      <h2 class="title">SpinPlayEnjoy — Login</h2>
+
+      <form id="loginForm" class="form">
+        <label>
+          Name
+          <input id="name" type="text" placeholder="Enter your name" required />
+        </label>
+
+        <label>
+          Password
+          <input id="password" type="password" placeholder="Default: 12345678" required />
+        </label>
+
+        <button type="submit" class="btn">Login</button>
+        <p class="hint">Default password: <strong>12345678</strong></p>
+      </form>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // login handling uses functions in script.js
+    document.getElementById('loginForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const pass = document.getElementById('password').value;
+      if(!name){
+        alert('Please enter your name.');
+        return;
+      }
+      if(pass !== '12345678'){
+        // show inline message instead of alert
+        alert('Incorrect password. Default is 12345678');
+        return;
+      }
+      sessionStorage.setItem('sp_user', name);
+      // go to spinner
+      window.location = 'index.html';
+    });
+  </script>
+</body>
+</html>
