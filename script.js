@@ -1,20 +1,20 @@
-// ===== LOGIN PAGE FUNCTION =====
+// ===== LOGIN FUNCTION =====
 function loginUser() {
     let username = document.getElementById("username").value.trim();
     let password = document.getElementById("password").value.trim();
 
     if (username && password) {
         localStorage.setItem("username", username);
-        window.location.href = "index.html"; // Go to spinner page
+        window.location.href = "index.html";
     } else {
         alert("Please enter both username and password.");
     }
 }
 
-// ===== SPINNER PAGE FUNCTION =====
+// ===== SPIN FUNCTION =====
 let selectedGame = null;
 function spinWheel() {
-    const wheel = document.getElementById("wheel");
+    const wheel = document.getElementById("wheel").querySelector("img");
     const games = ["speed.html", "memory.html", "quiz.html", "math.html", "typing.html"];
     
     const randomIndex = Math.floor(Math.random() * games.length);
@@ -29,14 +29,14 @@ function spinWheel() {
     }, 5200);
 }
 
-// ===== GAME INSTRUCTIONS POPUP =====
+// ===== SHOW GAME INSTRUCTIONS =====
 function showGameInstructions(game) {
     const popup = document.createElement("div");
     popup.classList.add("instruction-popup");
     popup.innerHTML = `
         <div class="popup-content">
             <h2>Game Instructions</h2>
-            <p>Read the instructions carefully before you start!</p>
+            <p>Complete the challenge within the time limit to win!</p>
             <button id="startGameBtn">Start Game</button>
         </div>
     `;
@@ -47,7 +47,7 @@ function showGameInstructions(game) {
     });
 }
 
-// ===== GAME TIMER FUNCTION =====
+// ===== TIMER FUNCTIONS =====
 let gameTimer;
 function startGameTimer(seconds) {
     gameTimer = setTimeout(() => {
@@ -55,7 +55,6 @@ function startGameTimer(seconds) {
         window.location.href = "index.html";
     }, seconds * 1000);
 }
-
 function stopGameTimer() {
     clearTimeout(gameTimer);
 }
