@@ -9,14 +9,19 @@
 <body class="bg-image">
     <div class="login-container">
         <h1>Spin & Win</h1>
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter username">
-
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter password">
-
-        <button onclick="loginUser()">Login</button>
+        <form onsubmit="return loginUser()">
+            <input type="text" id="username" placeholder="Enter Username" required>
+            <input type="password" id="password" placeholder="Enter Password" required>
+            <button type="submit">Login</button>
+        </form>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        function loginUser() {
+            // Simple login simulation
+            window.location.href = "index.html";
+            return false;
+        }
+    </script>
 </body>
 </html>
