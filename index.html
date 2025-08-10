@@ -3,24 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spin the Wheel</title>
+    <title>Spin & Win</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-image">
-    <div class="spinner-page">
+    <div class="spin-container">
         <h1>Spin & Win</h1>
-
-        <!-- Spinner Wheel -->
-        <div class="spinner-container">
-            <div class="spinner-wheel" id="wheel">
-                <img src="wheel.png" alt="Spin Wheel">
-            </div>
-        </div>
-
-        <!-- Spin Button -->
-        <button id="spinBtn" onclick="spinWheel()">Spin Now</button>
+        <canvas id="wheelCanvas" width="400" height="400"></canvas>
+        <button id="spinBtn">Spin Now</button>
+        <p id="result"></p>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
