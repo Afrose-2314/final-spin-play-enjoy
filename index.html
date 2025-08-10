@@ -3,28 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spin & Win</title>
+    <title>Spin the Wheel</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="spinner-container">
-        <div class="spinner-wheel" id="wheel"></div>
+<body class="bg-image">
+    <div class="spinner-page">
+        <h1>Spin & Win</h1>
+        <div class="spinner-container">
+            <div class="spinner-wheel" id="wheel">
+                <img src="wheel.png" alt="Spin Wheel">
+            </div>
+        </div>
+        <button onclick="spinWheel()">Spin Now</button>
     </div>
-
-    <script>
-        const wheel = document.getElementById("wheel");
-        let spinning = true;
-
-        // Spin animation trigger
-        setTimeout(() => {
-            wheel.style.animation = "spin 5s ease-in-out forwards";
-        }, 500);
-
-        // After spin ends → Go to game page
-        wheel.addEventListener("animationend", () => {
-            spinning = false;
-            window.location.href = "game.html"; // Change to your actual game page
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
