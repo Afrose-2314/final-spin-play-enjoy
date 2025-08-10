@@ -23,7 +23,7 @@
           <input id="password" type="password" placeholder="Default: 12345678" required />
         </label>
 
-        <button type="submit" class="btn">Login</button>
+        <button type="submit" class="btn primary">Login</button>
         <p class="hint">Default password: <strong>12345678</strong></p>
       </form>
     </div>
@@ -31,7 +31,7 @@
 
   <script src="script.js"></script>
   <script>
-    // login handling uses functions in script.js
+    // enforce login behavior
     document.getElementById('loginForm').addEventListener('submit', function(e){
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
@@ -41,13 +41,12 @@
         return;
       }
       if(pass !== '12345678'){
-        // show inline message instead of alert
         alert('Incorrect password. Default is 12345678');
         return;
       }
       sessionStorage.setItem('sp_user', name);
       // go to spinner
-      window.location = 'index.html';
+      location.href = 'index.html';
     });
   </script>
 </body>
