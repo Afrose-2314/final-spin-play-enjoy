@@ -1,80 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Speed Typing Game</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>SpinPlayEnjoy - Ferris Wheel Spinner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Speed Typing Game</h1>
-    <p>Type the following word:</p>
-    <h2 id="word"></h2>
-    <input type="text" id="text" placeholder="Start typing..." autocomplete="off">
-    <p>Time left: <span id="time">10</span>s</p>
-    <p>Score: <span id="score">0</span></p>
-    <button id="start-btn">Start Game</button>
+<div class="spinner-container">
+  <div id="wheel" class="wheel"></div>
+  <button id="spinBtn" class="spin-btn">🎡 Spin</button>
+</div>
+<div id="popup" class="popup hidden">
+  <div class="popup-content">
+    <h2 id="gameTitle"></h2>
+    <p id="instructions"></p>
+    <button id="okBtn">OK</button>
   </div>
-
-  <script>
-    const wordEl = document.getElementById('word');
-    const text = document.getElementById('text');
-    const scoreEl = document.getElementById('score');
-    const timeEl = document.getElementById('time');
-    const startBtn = document.getElementById('start-btn');
-
-    const words = ["javascript", "css", "html", "react", "python", "java", "typing", "speed", "game", "code"];
-    let randomWord;
-    let score = 0;
-    let time = 10;
-    let timerInterval;
-    let gameRunning = false;
-
-    function getRandomWord() {
-      return words[Math.floor(Math.random() * words.length)];
-    }
-
-    function displayWord() {
-      randomWord = getRandomWord();
-      wordEl.innerText = randomWord;
-    }
-
-    function startGame() {
-      score = 0;
-      time = 10;
-      scoreEl.innerText = score;
-      timeEl.innerText = time;
-      displayWord();
-      text.value = "";
-      text.focus();
-      gameRunning = true;
-      timerInterval = setInterval(updateTime, 1000);
-    }
-
-    function updateTime() {
-      time--;
-      timeEl.innerText = time;
-      if (time === 0) {
-        clearInterval(timerInterval);
-        gameRunning = false;
-        alert("Time's up! Final Score: " + score);
-      }
-    }
-
-    text.addEventListener('input', e => {
-      const insertedText = e.target.value;
-      if (insertedText === randomWord && gameRunning) {
-        score++;
-        scoreEl.innerText = score;
-        displayWord();
-        e.target.value = "";
-        time += 2;
-        timeEl.innerText = time;
-      }
-    });
-
-    startBtn.addEventListener('click', startGame);
-  </script>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
