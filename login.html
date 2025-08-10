@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Spin & Win</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Spin & Win</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-image">
     <div class="login-container">
         <h1>Spin & Win</h1>
-        <form onsubmit="return loginUser()">
+        <form id="loginForm">
             <input type="text" id="username" placeholder="Enter Username" required>
             <input type="password" id="password" placeholder="Enter Password" required>
             <button type="submit">Login</button>
         </form>
     </div>
 
-    <script>
-        function loginUser() {
-            // Simple login simulation
-            window.location.href = "index.html";
-            return false;
-        }
-    </script>
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Simple login redirect
+    window.location.href = "index.html";
+});
+</script>
 </body>
 </html>
