@@ -5,14 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spin the Wheel</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Inline style just to ensure alignment even if CSS fails */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-    </style>
 </head>
 <body class="bg-image">
     <div class="spinner-page">
@@ -26,7 +18,7 @@
         </div>
 
         <!-- Spin Button -->
-        <button onclick="spinWheel()">Spin Now</button>
+        <button id="spinBtn" onclick="spinWheel()">Spin Now</button>
     </div>
 
     <script src="script.js"></script>
