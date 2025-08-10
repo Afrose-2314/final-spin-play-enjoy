@@ -2,102 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Color Game</title>
+  <title>Color Match</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="style.css">
+  <style>
+    .color-box {
+      font-size: 28px;
+      padding: 18px;
+      border-radius: 12px;
+      background: #fff;
+      border: 2px solid #e8f1ff;
+      width: 260px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight:700;
+      user-select: none;
+      box-shadow:0 10px 30px rgba(10,40,90,0.06);
+    }
+  </style>
 </head>
 <body class="page-bg">
   <main class="centered-container game-page">
     <div class="game-card card">
       <div class="game-header" style="width:100%;">
-        <div><h2>Color Game</h2><p class="note">Type the <strong>font color name</strong> (not the word)</p></div>
+        <div><h2>Color Match</h2><p class="note">Type the name of the <strong>color shown</strong> (case-insensitive). 60 seconds.</p></div>
         <div class="timer" id="timer">60</div>
       </div>
 
       <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;">
-        <div id="displayWord" style="font-size:40px;font-weight:700;"></div>
-        <input id="answer" placeholder="Type color name (e.g. blue)" style="padding:10px;border-radius:8px;border:1px solid #dbe7ff;width:320px" />
-        <div class="note">Score: <span id="score">0</span></div>
-        <div style="margin-top:8px">
+        <div id="colorBox" class="color-box">COLOR</div>
+        <input id="typeInput" autocomplete="off" placeholder="Type color name..." style="padding:10px;border-radius:8px;border:1px solid #dbe7ff;width:360px" />
+        <div>Score: <span id="score">0</span></div>
+        <div>
           <button id="submitBtn" class="btn primary">Submit</button>
           <button id="quitBtn" class="btn">Quit</button>
         </div>
       </div>
-
     </div>
   </main>
 
 <script src="script.js"></script>
 <script>
   if(!sessionStorage.getItem('sp_user')) location.href='login.html';
-  const colors = ['red','blue','green','yellow','purple','orange','brown','black','pink','teal'];
-  let timerEl = document.getElementById('timer');
-  let display = document.getElementById('displayWord');
-  let answerEl = document.getElementById('answer');
-  let scoreEl = document.getElementById('score');
-  let submitBtn = document.getElementById('submitBtn');
-  let quitBtn = document.getElementById('quitBtn');
 
-  let time = 60, score=0, currentColor='';
+  const colors = ['red','blue','green','yellow','orange','purple','pink','brown','black','white','gray','cyan','magenta','teal'];
+  const timerEl = document.getElementById('timer');
+  const colorBox = document.getElementById('colorBox');
+  const typeInput = document.getElementById('typeInput');
+  const scoreEl = document.getElementById('score');
+  const submitBtn = document.getElementById('submitBtn');
+  const quitBtn = document.getElementById('quitBtn');
 
-  // show instruction animation BEFORE start: check URL param to show popup?
-  // We assume spinner already showed instructions and navigated here on Start.
+  let time = 60, score = 0;
+  let current = '';
 
-  function nextWord(){
-    const text = colors[Math.floor(Math.random()*colors.length)];
-    // choose a different color for font
-    let font;
-    do{ font = colors[Math.floor(Math.random()*colors.length)]; } while(font===text);
-    display.textContent = text;
-    display.style.color = font;
-    currentColor = font;
-    answerEl.value='';
-    answerEl.focus();
+  function nextColor() {
+    current = colors[Math.floor(Math.random() * colors.length)];
+    // set background to current and text show the name (to avoid confusion)
+    colorBox.style.backgroundColor = current;
+    colorBox.style.color = (current === 'black' ? '#fff' : '#0a0a0a');
+    colorBox.textContent = current.toUpperCase();
+    typeInput.value = '';
+    typeInput.focus();
   }
 
-  // timer
-  let interval = null;
-  function startGame(){
-    nextWord();
-    interval = setInterval(()=> {
-      time--;
-      timerEl.textContent = time;
-      if(time<=0) endTimeout();
-    },1000);
-  }
+  const interval = setInterval(()=> {
+    time--;
+    timerEl.textContent = time;
+    if(time <= 0) endTimeout();
+  },1000);
 
   function endTimeout(){
     clearInterval(interval);
-    answerEl.disabled = true;
-    submitBtn.disabled = true;
-    // show fail and return to spinner
-    window.spHelpers.gameEnd(false, 'Time up');
+    typeInput.disabled = true; submitBtn.disabled = true;
+    window.spHelpers.gameEnd(false,'Time up');
   }
 
-  submitBtn.addEventListener('click', ()=>{
-    const val = answerEl.value.trim().toLowerCase();
+  function checkAnswer(){
+    const val = typeInput.value.trim().toLowerCase();
     if(!val) return;
-    if(val === currentColor){
+    if(val === current.toLowerCase()){
       score++;
       scoreEl.textContent = score;
-      // small success animation
-      display.animate([{transform:'scale(1)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:300});
-      nextWord();
+      // small success pulse
+      colorBox.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:220});
+      nextColor();
     } else {
-      // minor shake
-      answerEl.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:350});
-      answerEl.value='';
-      answerEl.focus();
+      // shake input and clear
+      typeInput.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:300});
+      typeInput.value='';
+      typeInput.focus();
     }
+  }
+
+  submitBtn.addEventListener('click', checkAnswer);
+  typeInput.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter') checkAnswer();
   });
 
   quitBtn.addEventListener('click', ()=> {
     clearInterval(interval);
-    window.location='index.html';
+    window.location = 'index.html';
   });
 
-  // start when the page loads
-  window.addEventListener('load', startGame);
+  // start game immediately
+  nextColor();
 </script>
 </body>
 </html>
