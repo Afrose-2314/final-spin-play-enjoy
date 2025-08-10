@@ -1,32 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SpinPlayEnjoy</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin & Win</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="header">
-  <h1>Welcome, <span id="playerName"></span> 🎉</h1>
-</div>
+    <div class="spinner-container">
+        <div class="spinner-wheel" id="wheel"></div>
+    </div>
 
-<div class="spinner-container">
-  <div id="wheel" class="wheel"></div>
-  <button id="spinBtn">🎡 Spin</button>
-</div>
+    <script>
+        const wheel = document.getElementById("wheel");
+        let spinning = true;
 
-<!-- Game Instructions Popup -->
-<div id="popup" class="popup hidden">
-  <div class="popup-content">
-    <h2>📜 Game Instructions</h2>
-    <p id="instructions"></p>
-    <button id="okBtn">OK</button>
-  </div>
-</div>
+        // Spin animation trigger
+        setTimeout(() => {
+            wheel.style.animation = "spin 5s ease-in-out forwards";
+        }, 500);
 
-<script src="script.js"></script>
-<script>
-document.getElementById("playerName").textContent = localStorage.getItem("playerName") || "Player";
-</script>
+        // After spin ends → Go to game page
+        wheel.addEventListener("animationend", () => {
+            spinning = false;
+            window.location.href = "game.html"; // Change to your actual game page
+        });
+    </script>
 </body>
 </html>
