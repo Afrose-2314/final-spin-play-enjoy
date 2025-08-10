@@ -6,9 +6,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="style.css">
   <style>
-    /* small styles for tiles */
-    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%}
-    .tile{aspect-ratio:1/1;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 8px 20px rgba(12,30,80,0.06);user-select:none}
+    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%;max-width:760px}
+    .tile{aspect-ratio:1/1;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 8px 20px rgba(12,30,80,0.06);user-select:none;transition:transform .18s}
     .tile.revealed{transform:scale(1.02)}
   </style>
 </head>
@@ -34,18 +33,18 @@
 <script>
   if(!sessionStorage.getItem('sp_user')) location.href='login.html';
   const colors = ['#ff6b6b','#6bc1ff','#9b8cff','#ffd56b','#7be37b','#ff9fb3','#c0f3ff','#ffd1f0','#c8f7a6','#b6b6ff'];
+  const grid = document.getElementById('grid');
+  const matchesEl = document.getElementById('matches');
+  const quitBtn = document.getElementById('quitBtn');
+  const timerEl = document.getElementById('timer');
+
   let tiles = [];
-  let grid = document.getElementById('grid');
-  let matchesEl = document.getElementById('matches');
-  let quitBtn = document.getElementById('quitBtn');
-  let timerEl = document.getElementById('timer');
   let time = 60;
   let matches = 0;
   let first = null, second = null;
   let clickable = true;
 
   function build(){
-    // duplicate colors to make pairs
     tiles = colors.concat(colors);
     tiles = window.spHelpers.shuffle(tiles);
     grid.innerHTML = '';
@@ -54,7 +53,6 @@
       t.className = 'tile';
       t.dataset.color = c;
       t.dataset.index = i;
-      t.innerHTML = '';
       t.addEventListener('click', onTileClick);
       grid.appendChild(t);
     });
@@ -69,7 +67,7 @@
     else if(!second){
       second = t;
       clickable = false;
-      setTimeout(()=> checkMatch(),550);
+      setTimeout(checkMatch,520);
     }
   }
 
@@ -86,40 +84,34 @@
     if(first.dataset.color === second.dataset.color){
       matches++;
       matchesEl.textContent = matches;
-      first.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.04)';
-      second.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.04)';
-      // keep revealed
       first = null; second = null; clickable = true;
-      if(matches >= 10) {
+      if(matches >= 10){
         clearInterval(interval);
         window.spHelpers.gameEnd(true,'All pairs matched!');
       }
     } else {
-      // hide back
       hideTile(first); hideTile(second);
       first = null; second = null; clickable = true;
     }
   }
 
-  let interval = setInterval(()=> {
+  const interval = setInterval(()=> {
     time--;
     timerEl.textContent = time;
-    if(time<=0) endTimeout();
+    if(time <= 0) endTimeout();
   },1000);
 
   function endTimeout(){
     clearInterval(interval);
     clickable = false;
-    // reveal all then end
-    document.querySelectorAll('.tile').forEach(t => {
-      t.style.background = t.dataset.color;
-    });
+    // reveal all quickly
+    document.querySelectorAll('.tile').forEach(t => t.style.background = t.dataset.color);
     setTimeout(()=> window.spHelpers.gameEnd(false,'Time up'),900);
   }
 
   quitBtn.addEventListener('click', ()=> {
     clearInterval(interval);
-    window.location = 'index.html';
+    window.location='index.html';
   });
 
   build();
