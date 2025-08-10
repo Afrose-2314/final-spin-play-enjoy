@@ -1,33 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Login - SpinPlayEnjoy</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Spin Play Enjoy</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="login-page">
-<div class="login-container">
-  <h1>🎯 SpinPlayEnjoy</h1>
-  <input type="text" id="username" placeholder="Enter your name" required>
-  <input type="password" id="password" placeholder="Enter password" required>
-  <button onclick="login()">Login</button>
-</div>
-
-<script>
-function login() {
-  const name = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value;
-  if (!name || !pass) {
-    alert("Please enter both name and password");
-    return;
-  }
-  if (pass === "12345678") {
-    localStorage.setItem("playerName", name);
-    window.location.href = "index.html";
-  } else {
-    alert("Incorrect password! Try again.");
-  }
-}
-</script>
+    <div class="centered-container">
+        <div class="card">
+            <h1>🎡 Welcome to Spin Play Enjoy 🎮</h1>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Enter your username" required>
+                <input type="password" id="password" placeholder="Enter your password" required>
+                <button type="submit" class="btn primary">Login</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
