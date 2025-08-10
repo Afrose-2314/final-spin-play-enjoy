@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Speed Typing</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .type-box{font-size:24px;padding:16px;border-radius:12px;background:#fff;border:1px solid #e8f1ff;width:80%;text-align:center}
+  </style>
+</head>
+<body class="page-bg">
+  <main class="centered-container game-page">
+    <div class="game-card card">
+      <div class="game-header" style="width:100%;">
+        <div><h2>Speed Typing</h2><p class="note">Type the shown word exactly (case-insensitive). 60 seconds.</p></div>
+        <div class="timer" id="timer">60</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;">
+        <div id="wordBox" class="type-box"></div>
+        <input id="typeInput" placeholder="Type here..." style="padding:10px;border-radius:8px;border:1px solid #dbe7ff;width:360px" />
+        <div>Score: <span id="score">0</span></div>
+        <div>
+          <button id="submitBtn" class="btn primary">Submit</button>
+          <button id="quitBtn" class="btn">Quit</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+  if(!sessionStorage.getItem('sp_user')) location.href='login.html';
+  const words = ['computer','internet','variable','function','document','keyboard','monitor','program','memory','network','algorithm','array','object','server','client','compile','execute','binary','syntax','debug'];
+  let timerEl = document.getElementById('timer');
+  let wordBox = document.getElementById('wordBox');
+  let typeInput = document.getElementById('typeInput');
+  let scoreEl = document.getElementById('score');
+  let submitBtn = document.getElementById('submitBtn');
+  let quitBtn = document.getElementById('quitBtn');
+
+  let time = 60, score=0;
+  let current = '';
+
+  function nextWord(){
+    current = words[Math.floor(Math.random()*words.length)];
+    wordBox.textContent = current;
+    typeInput.value='';
+    typeInput.focus();
+  }
+
+  let interval = setInterval(()=> {
+    time--;
+    timerEl.textContent = time;
+    if(time<=0) endTimeout();
+  },1000);
+
+  function endTimeout(){
+    clearInterval(interval);
+    typeInput.disabled = true; submitBtn.disabled = true;
+    window.spHelpers.gameEnd(false,'Time up');
+  }
+
+  submitBtn.addEventListener('click', ()=>{
+    const t = typeInput.value.trim().toLowerCase();
+    if(!t) return;
+    if(t === current.toLowerCase()){
+      score++; scoreEl.textContent = score;
+      nextWord();
+    } else {
+      typeInput.value='';
+      typeInput.focus();
+    }
+  });
+
+  quitBtn.addEventListener('click', ()=> {
+    clearInterval(interval);
+    window.location='index.html';
+  });
+
+  nextWord();
+</script>
+</body>
+</html>
