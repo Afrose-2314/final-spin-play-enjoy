@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Memory Game</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* small styles for tiles */
+    .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:100%}
+    .tile{aspect-ratio:1/1;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 8px 20px rgba(12,30,80,0.06);user-select:none}
+    .tile.revealed{transform:scale(1.02)}
+  </style>
+</head>
+<body class="page-bg">
+  <main class="centered-container game-page">
+    <div class="game-card card">
+      <div class="game-header" style="width:100%;">
+        <div><h2>Memory Game</h2><p class="note">Match all 10 color pairs</p></div>
+        <div class="timer" id="timer">60</div>
+      </div>
+
+      <div style="width:100%;display:flex;flex-direction:column;gap:12px;align-items:center">
+        <div id="grid" class="grid"></div>
+        <div class="note">Matches: <span id="matches">0</span>/10</div>
+        <div>
+          <button id="quitBtn" class="btn">Quit</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+  if(!sessionStorage.getItem('sp_user')) location.href='login.html';
+  const colors = ['#ff6b6b','#6bc1ff','#9b8cff','#ffd56b','#7be37b','#ff9fb3','#c0f3ff','#ffd1f0','#c8f7a6','#b6b6ff'];
+  let tiles = [];
+  let grid = document.getElementById('grid');
+  let matchesEl = document.getElementById('matches');
+  let quitBtn = document.getElementById('quitBtn');
+  let timerEl = document.getElementById('timer');
+  let time = 60;
+  let matches = 0;
+  let first = null, second = null;
+  let clickable = true;
+
+  function build(){
+    // duplicate colors to make pairs
+    tiles = colors.concat(colors);
+    tiles = window.spHelpers.shuffle(tiles);
+    grid.innerHTML = '';
+    tiles.forEach((c,i)=>{
+      const t = document.createElement('div');
+      t.className = 'tile';
+      t.dataset.color = c;
+      t.dataset.index = i;
+      t.innerHTML = '';
+      t.addEventListener('click', onTileClick);
+      grid.appendChild(t);
+    });
+  }
+
+  function onTileClick(e){
+    if(!clickable) return;
+    const t = e.currentTarget;
+    if(t.classList.contains('revealed')) return;
+    reveal(t);
+    if(!first) first = t;
+    else if(!second){
+      second = t;
+      clickable = false;
+      setTimeout(()=> checkMatch(),550);
+    }
+  }
+
+  function reveal(t){
+    t.style.background = t.dataset.color;
+    t.classList.add('revealed');
+  }
+  function hideTile(t){
+    t.style.background = '#fff';
+    t.classList.remove('revealed');
+  }
+
+  function checkMatch(){
+    if(first.dataset.color === second.dataset.color){
+      matches++;
+      matchesEl.textContent = matches;
+      first.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.04)';
+      second.style.boxShadow = 'inset 0 0 20px rgba(0,0,0,0.04)';
+      // keep revealed
+      first = null; second = null; clickable = true;
+      if(matches >= 10) {
+        clearInterval(interval);
+        window.spHelpers.gameEnd(true,'All pairs matched!');
+      }
+    } else {
+      // hide back
+      hideTile(first); hideTile(second);
+      first = null; second = null; clickable = true;
+    }
+  }
+
+  let interval = setInterval(()=> {
+    time--;
+    timerEl.textContent = time;
+    if(time<=0) endTimeout();
+  },1000);
+
+  function endTimeout(){
+    clearInterval(interval);
+    clickable = false;
+    // reveal all then end
+    document.querySelectorAll('.tile').forEach(t => {
+      t.style.background = t.dataset.color;
+    });
+    setTimeout(()=> window.spHelpers.gameEnd(false,'Time up'),900);
+  }
+
+  quitBtn.addEventListener('click', ()=> {
+    clearInterval(interval);
+    window.location = 'index.html';
+  });
+
+  build();
+</script>
+</body>
+</html>
