@@ -1,45 +1,45 @@
 /* Shared functions for spinner and games */
 
-// ---- Spinner logic ----
-let wheelEl, spinBtn, modal, instTitle, instBody, instStart, instCancel;
+// ---- Helpers and state ----
+let wheelEl, spinBtn, modalEl, instTitleEl, instBodyEl, instStartBtn, instCancelBtn;
 let currentGames = [];
 let spinning = false;
 
 function initWheel(games){
-  currentGames = games.slice(); // copy
+  currentGames = games.slice();
   wheelEl = document.getElementById('wheel');
   spinBtn = document.getElementById('spinBtn');
-  modal = document.getElementById('instructionsModal');
-  instTitle = document.getElementById('instTitle');
-  instBody = document.getElementById('instBody');
-  instStart = document.getElementById('instStart');
-  instCancel = document.getElementById('instCancel');
+  modalEl = document.getElementById('instructionsModal');
+  instTitleEl = document.getElementById('instTitle');
+  instBodyEl = document.getElementById('instBody');
+  instStartBtn = document.getElementById('instStart');
+  instCancelBtn = document.getElementById('instCancel');
 
-  renderLabels(games);
-  spinBtn.addEventListener('click', handleSpin);
-  instCancel.addEventListener('click', ()=> hideModal());
-  instStart.addEventListener('click', ()=> {
-    // open the selected game page
-    const sel = spinBtn.dataset.selected;
-    if(!sel) { hideModal(); return; }
-    const game = currentGames.find(g => g.id === sel);
-    window.location = game.file + '?player=' + encodeURIComponent(sessionStorage.getItem('sp_user')||'Player');
+  renderLabels(currentGames);
+  if(spinBtn){
+    spinBtn.addEventListener('click', handleSpin);
+  }
+  if(instCancelBtn) instCancelBtn.addEventListener('click', hideModal);
+  if(instStartBtn) instStartBtn.addEventListener('click', ()=> {
+    const selectedId = spinBtn.dataset.selected;
+    if(!selectedId) { hideModal(); return; }
+    const g = currentGames.find(x=>x.id === selectedId);
+    if(g) location.href = g.file;
   });
 }
 
-/* place labels evenly but using random order */
+/* render labels evenly around wheel, in random order each time */
 function renderLabels(games){
-  // shuffle order so each spin start looks different
   const order = shuffle([...games]);
   wheelEl.innerHTML = '';
-  const center = 50; // percent
-  const r = 140; // radius in px approx (depends on wheel size)
   const count = order.length;
+  const cx = 50, cy = 50; // percentages center
+  const radius = 38; // percent radius
   for(let i=0;i<count;i++){
-    const angle = (360/count)*i - 90; // start from top
+    const angle = (360 / count) * i - 90; // start top
     const rad = angle * Math.PI/180;
-    const x = 50 + Math.cos(rad)*42; // percent adjustments
-    const y = 50 + Math.sin(rad)*42;
+    const x = cx + Math.cos(rad) * radius;
+    const y = cy + Math.sin(rad) * radius;
     const label = document.createElement('div');
     label.className = 'label';
     label.style.left = `${x}%`;
@@ -51,66 +51,67 @@ function renderLabels(games){
   }
 }
 
-/* spin handler: rotate wheel to a random degree with easing */
+/* spin logic */
 function handleSpin(){
   if(spinning) return;
   spinning = true;
-  // re-render labels to shuffle positions
-  renderLabels(currentGames);
+  renderLabels(currentGames); // shuffle positions before spin
 
-  // choose random target game
   const idx = Math.floor(Math.random()*currentGames.length);
-  const segment = 360/currentGames.length;
-  // compute random rotation that lands middle of segment at pointer (0deg)
-  // pointer is at top (we used -90 offset earlier). We'll compute final rotation so label angle aligns to 270deg.
-  const baseAngle = 360 * (3 + Math.floor(Math.random()*4)); // give several full spins (3-6)
-  // target center angle relative to label index:
-  const targetAngle = (idx * segment) + segment/2; // angle position of chosen segment
-  // we want wheel rotate so that targetAngle ends at 270deg (pointer)
-  const final = baseAngle + (270 - targetAngle);
-  // apply rotation
+  const segment = 360 / currentGames.length;
+  const fullSpins = 3 + Math.floor(Math.random()*3); // 3-5 full spins
+  const baseAngle = 360 * fullSpins;
+  const targetAngle = (idx * segment) + (segment / 2); // center of chosen segment
+  // pointer is at 270deg (top). compute final rotation so that targetAngle ends at pointer.
+  const final = baseAngle + (270 - targetAngle) + (Math.random()*segment - segment/2);
+  // set transition and rotate
   wheelEl.style.transition = 'transform 4s cubic-bezier(.16,.98,.3,1.02)';
   wheelEl.style.transform = `rotate(${final}deg)`;
-
-  // glow effect on wheel while spinning
   wheelEl.classList.add('spinning-glow');
-  spinBtn.classList.add('disabled');
   spinBtn.disabled = true;
 
-  // after transition ends determine selected
-  wheelEl.addEventListener('transitionend', onSpinEnd, {once:true});
-  // store selection temporarily on the button dataset
+  // store selection
   spinBtn.dataset.selected = currentGames[idx].id;
+
+  wheelEl.addEventListener('transitionend', function onEnd(){
+    wheelEl.removeEventListener('transitionend', onEnd);
+    spinning = false;
+    wheelEl.classList.remove('spinning-glow');
+    spinBtn.disabled = false;
+    // show instructions modal
+    const selectedId = spinBtn.dataset.selected;
+    const g = currentGames.find(x=>x.id === selectedId);
+    if(g) showInstructions(g);
+  });
 }
 
-function onSpinEnd(){
-  spinning = false;
-  wheelEl.classList.remove('spinning-glow');
-  spinBtn.disabled = false;
-  spinBtn.classList.remove('disabled');
-  // show instructions modal for selected game
-  const selectedId = spinBtn.dataset.selected;
-  const game = currentGames.find(g => g.id === selectedId);
-  if(game){
-    showInstructions(game);
-  }
-}
-
-/* modal controls */
 function showInstructions(game){
-  instTitle.innerHTML = game.name;
-  instBody.innerHTML = game.inst + '<p class="note">After time ends, input will stop and you will be returned to Spinner.</p>';
-  modal.style.display = 'flex';
-  // animate modal content (class .animated-pop in CSS does it)
-  // set data for start button
-  spinBtn.dataset.selected = game.id;
+  instTitleEl.innerHTML = game.name;
+  instBodyEl.innerHTML = game.inst + '<p class="note">After time ends, the game will stop and you will return to spinner automatically.</p>';
+  modalEl.style.display = 'flex';
+  modalEl.setAttribute('aria-hidden','false');
 }
-
 function hideModal(){
-  modal.style.display = 'none';
+  modalEl.style.display = 'none';
+  modalEl.setAttribute('aria-hidden','true');
 }
 
-/* utility shuffle */
+/* gameEnd: show inline badge then redirect to spinner */
+function gameEnd(success, message){
+  const container = document.querySelector('.game-card') || document.body;
+  const badge = document.createElement('div');
+  badge.className = `result-badge show ${success? 'congrats':'fail'}`;
+  badge.style.position = 'relative';
+  badge.style.zIndex = 999;
+  badge.innerHTML = success ? `🎉 Congratulations! ${message||''}` : `❌ Try Again ${message||''}`;
+  container.prepend(badge);
+  // make sure user sees it, then redirect
+  setTimeout(()=> {
+    location.href = 'index.html';
+  }, 1400);
+}
+
+/* shuffle helper */
 function shuffle(arr){
   for(let i=arr.length-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
@@ -119,21 +120,7 @@ function shuffle(arr){
   return arr;
 }
 
-/* helper used by games to end and redirect */
-function gameEnd(success, message){
-  // show result badge
-  const badge = document.createElement('div');
-  badge.className = `result-badge show ${success? 'congrats':'fail'}`;
-  badge.innerHTML = success ? `🎉 Congratulations! ${message||''}` : `❌ Try Again ${message||''}`;
-  document.querySelector('.game-card').prepend(badge);
-  // stop any timers already handled in game code
-  // after 2 seconds redirect to spinner
-  setTimeout(()=> {
-    window.location = 'index.html';
-  }, 1800);
-}
-
-/* Expose helpers to window so game pages can call them */
+/* Expose helpers to pages */
 window.spHelpers = {
   gameEnd,
   shuffle
