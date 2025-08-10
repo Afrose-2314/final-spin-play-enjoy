@@ -20,21 +20,19 @@
   <main class="centered-container">
     <div class="card spinner-card">
       <div class="spinner-wrap">
-        <div id="wheel" class="wheel">
-          <!-- labels will be placed by JS -->
-        </div>
-        <div class="spinner-pointer">▼</div>
+        <div id="wheel" class="wheel" aria-hidden="true"></div>
+        <div class="spinner-pointer">▲</div>
       </div>
 
       <div class="controls">
         <button id="spinBtn" class="btn big">SPIN</button>
-        <p class="note">Click SPIN. Wheel will shuffle icons and stop on a game.</p>
+        <p class="note">Click <strong>SPIN</strong>. Wheel will shuffle icons and stop on a game. Then instruction popup appears — click <strong>Start</strong> to play.</p>
       </div>
     </div>
   </main>
 
-  <!-- Instruction Popup (hidden by default) -->
-  <div id="instructionsModal" class="modal">
+  <!-- Instruction Popup -->
+  <div id="instructionsModal" class="modal" aria-hidden="true">
     <div class="modal-content animated-pop">
       <h2 id="instTitle">Instructions</h2>
       <div id="instBody" class="inst-body"></div>
@@ -47,28 +45,25 @@
 
   <script src="script.js"></script>
   <script>
-    // spinner configuration: five games
+    // check login
+    if(!sessionStorage.getItem('sp_user')) location.href = 'login.html';
+    document.getElementById('userName').textContent = sessionStorage.getItem('sp_user') || 'Player';
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{
+      sessionStorage.removeItem('sp_user');
+      location.href = 'login.html';
+    });
+
+    // game listing
     const GAMES = [
-      { id: 'color', label: '🎨', name: 'Color Game', file: 'color.html', inst: 'Type the <strong>font color</strong> of the word (not the word text). 60 seconds.' },
-      { id: 'guess', label: '🔢', name: 'Guess Game', file: 'guess.html', inst: 'Guess the number chosen by the system before time ends. Hints will be given.' },
-      { id: 'memory', label: '🧠', name: 'Memory Game', file: 'memory.html', inst: 'Match 10 color pairs by flipping tiles. Remember positions. 60 seconds.' },
-      { id: 'math', label: '➕', name: 'Math Game', file: 'math.html', inst: 'Solve simple addition, subtraction, multiplication (0–10). 60 seconds.' },
-      { id: 'typing', label: '⌨️', name: 'Speed Typing', file: 'typing.html', inst: 'Type the shown words as fast and accurate as you can. 60 seconds.' }
+      { id: 'color', label: '🎨', name: 'Color Match', file: 'color.html', inst: 'Type the <strong>color name</strong> shown by the box background (not the text). 60 seconds.' },
+      { id: 'guess', label: '🔢', name: 'Guess Game', file: 'guess.html', inst: 'Guess the number (0–100). Hints will be shown. 60 seconds.' },
+      { id: 'memory', label: '🧠', name: 'Memory Game', file: 'memory.html', inst: 'Match 10 color pairs. 60 seconds.' },
+      { id: 'math', label: '➗', name: 'Math Game', file: 'math.html', inst: 'Solve simple arithmetic (0–10). 60 seconds.' },
+      { id: 'typing', label: '⌨️', name: 'Speed Typing', file: 'speed.html', inst: 'Type the shown words quickly and accurately. 60 seconds.' }
     ];
 
-    // initialize spinner UI
-    (function(){
-      // show user name
-      const user = sessionStorage.getItem('sp_user') || 'Player';
-      document.getElementById('userName').textContent = user;
-
-      document.getElementById('logoutBtn').addEventListener('click', ()=>{
-        sessionStorage.removeItem('sp_user');
-        location.href = 'login.html';
-      });
-
-      initWheel(GAMES);
-    })();
+    // initialize wheel (function defined in script.js)
+    initWheel(GAMES);
   </script>
 </body>
 </html>
