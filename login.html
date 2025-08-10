@@ -1,53 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>SpinPlayEnjoy — Login</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>SpinPlayEnjoy - Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="page-bg">
-  <main class="centered-container">
-    <div class="card login-card">
-      <h1 class="brand">Prince Shri Venkateshwara Arts & Science College</h1>
-      <h2 class="title">SpinPlayEnjoy — Login</h2>
-
-      <form id="loginForm" class="form">
-        <label>
-          Name
-          <input id="name" type="text" placeholder="Enter your name" required />
-        </label>
-
-        <label>
-          Password
-          <input id="password" type="password" placeholder="Default: 12345678" required />
-        </label>
-
-        <button type="submit" class="btn primary">Login</button>
-        <p class="hint">Default password: <strong>12345678</strong></p>
-      </form>
-    </div>
-  </main>
-
-  <script src="script.js"></script>
-  <script>
-    // enforce login behavior
-    document.getElementById('loginForm').addEventListener('submit', function(e){
-      e.preventDefault();
-      const name = document.getElementById('name').value.trim();
-      const pass = document.getElementById('password').value;
-      if(!name){
-        alert('Please enter your name.');
-        return;
-      }
-      if(pass !== '12345678'){
-        alert('Incorrect password. Default is 12345678');
-        return;
-      }
-      sessionStorage.setItem('sp_user', name);
-      // go to spinner
-      location.href = 'index.html';
-    });
-  </script>
+<body class="login-bg">
+<div class="login-container">
+  <h1>🎡 SpinPlayEnjoy</h1>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="Enter your name" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  if(username && password === "12345678"){
+    localStorage.setItem("playerName", username);
+    window.location.href = "index.html";
+  } else {
+    alert("Invalid credentials! Default password is 12345678.");
+  }
+});
+</script>
 </body>
 </html>
