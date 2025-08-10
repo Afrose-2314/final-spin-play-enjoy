@@ -2,22 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SpinPlayEnjoy - Ferris Wheel Spinner</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SpinPlayEnjoy</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="header">
+  <h1>Welcome, <span id="playerName"></span> 🎉</h1>
+</div>
+
 <div class="spinner-container">
   <div id="wheel" class="wheel"></div>
-  <button id="spinBtn" class="spin-btn">🎡 Spin</button>
+  <button id="spinBtn">🎡 Spin</button>
 </div>
+
+<!-- Game Instructions Popup -->
 <div id="popup" class="popup hidden">
   <div class="popup-content">
-    <h2 id="gameTitle"></h2>
+    <h2>📜 Game Instructions</h2>
     <p id="instructions"></p>
     <button id="okBtn">OK</button>
   </div>
 </div>
+
 <script src="script.js"></script>
+<script>
+document.getElementById("playerName").textContent = localStorage.getItem("playerName") || "Player";
+</script>
 </body>
 </html>
