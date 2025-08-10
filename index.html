@@ -1,69 +1,80 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>SpinPlayEnjoy — Spinner</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speed Typing Game</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="page-bg">
-  <header class="header">
-    <div class="header-left">
-      <h1>SpinPlayEnjoy</h1>
-      <p class="small">Welcome, <span id="userName">Player</span></p>
-    </div>
-    <div class="header-right">
-      <button id="logoutBtn" class="btn small">Logout</button>
-    </div>
-  </header>
-
-  <main class="centered-container">
-    <div class="card spinner-card">
-      <div class="spinner-wrap">
-        <div id="wheel" class="wheel" aria-hidden="true"></div>
-        <div class="spinner-pointer">▲</div>
-      </div>
-
-      <div class="controls">
-        <button id="spinBtn" class="btn big">SPIN</button>
-        <p class="note">Click <strong>SPIN</strong>. Wheel will shuffle icons and stop on a game. Then instruction popup appears — click <strong>Start</strong> to play.</p>
-      </div>
-    </div>
-  </main>
-
-  <!-- Instruction Popup -->
-  <div id="instructionsModal" class="modal" aria-hidden="true">
-    <div class="modal-content animated-pop">
-      <h2 id="instTitle">Instructions</h2>
-      <div id="instBody" class="inst-body"></div>
-      <div class="modal-actions">
-        <button id="instCancel" class="btn">Cancel</button>
-        <button id="instStart" class="btn primary">Start</button>
-      </div>
-    </div>
+<body>
+  <div class="container">
+    <h1>Speed Typing Game</h1>
+    <p>Type the following word:</p>
+    <h2 id="word"></h2>
+    <input type="text" id="text" placeholder="Start typing..." autocomplete="off">
+    <p>Time left: <span id="time">10</span>s</p>
+    <p>Score: <span id="score">0</span></p>
+    <button id="start-btn">Start Game</button>
   </div>
 
-  <script src="script.js"></script>
   <script>
-    // check login
-    if(!sessionStorage.getItem('sp_user')) location.href = 'login.html';
-    document.getElementById('userName').textContent = sessionStorage.getItem('sp_user') || 'Player';
-    document.getElementById('logoutBtn').addEventListener('click', ()=>{
-      sessionStorage.removeItem('sp_user');
-      location.href = 'login.html';
+    const wordEl = document.getElementById('word');
+    const text = document.getElementById('text');
+    const scoreEl = document.getElementById('score');
+    const timeEl = document.getElementById('time');
+    const startBtn = document.getElementById('start-btn');
+
+    const words = ["javascript", "css", "html", "react", "python", "java", "typing", "speed", "game", "code"];
+    let randomWord;
+    let score = 0;
+    let time = 10;
+    let timerInterval;
+    let gameRunning = false;
+
+    function getRandomWord() {
+      return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function displayWord() {
+      randomWord = getRandomWord();
+      wordEl.innerText = randomWord;
+    }
+
+    function startGame() {
+      score = 0;
+      time = 10;
+      scoreEl.innerText = score;
+      timeEl.innerText = time;
+      displayWord();
+      text.value = "";
+      text.focus();
+      gameRunning = true;
+      timerInterval = setInterval(updateTime, 1000);
+    }
+
+    function updateTime() {
+      time--;
+      timeEl.innerText = time;
+      if (time === 0) {
+        clearInterval(timerInterval);
+        gameRunning = false;
+        alert("Time's up! Final Score: " + score);
+      }
+    }
+
+    text.addEventListener('input', e => {
+      const insertedText = e.target.value;
+      if (insertedText === randomWord && gameRunning) {
+        score++;
+        scoreEl.innerText = score;
+        displayWord();
+        e.target.value = "";
+        time += 2;
+        timeEl.innerText = time;
+      }
     });
 
-    // game listing
-    const GAMES = [
-      { id: 'color', label: '🎨', name: 'Color Match', file: 'color.html', inst: 'Type the <strong>color name</strong> shown by the box background (not the text). 60 seconds.' },
-      { id: 'guess', label: '🔢', name: 'Guess Game', file: 'guess.html', inst: 'Guess the number (0–100). Hints will be shown. 60 seconds.' },
-      { id: 'memory', label: '🧠', name: 'Memory Game', file: 'memory.html', inst: 'Match 10 color pairs. 60 seconds.' },
-      { id: 'math', label: '➗', name: 'Math Game', file: 'math.html', inst: 'Solve simple arithmetic (0–10). 60 seconds.' },
-      { id: 'typing', label: '⌨️', name: 'Speed Typing', file: 'speed.html', inst: 'Type the shown words quickly and accurately. 60 seconds.' }
-    ];
-
-    // initialize wheel (function defined in script.js)
-    initWheel(GAMES);
+    startBtn.addEventListener('click', startGame);
   </script>
 </body>
 </html>
