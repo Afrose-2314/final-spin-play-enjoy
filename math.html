@@ -10,7 +10,7 @@
   <main class="centered-container game-page">
     <div class="game-card card">
       <div class="game-header" style="width:100%;">
-        <div><h2>Math Game</h2><p class="note">Solve simple sums (0–10)</p></div>
+        <div><h2>Math Game</h2><p class="note">Solve simple sums (0–10). 60 seconds.</p></div>
         <div class="timer" id="timer">60</div>
       </div>
 
@@ -23,36 +23,39 @@
           <button id="quitBtn" class="btn">Quit</button>
         </div>
       </div>
-
     </div>
   </main>
 
 <script src="script.js"></script>
 <script>
   if(!sessionStorage.getItem('sp_user')) location.href='login.html';
-  let timerEl = document.getElementById('timer');
-  let questionEl = document.getElementById('question');
-  let answerEl = document.getElementById('answer');
-  let scoreEl = document.getElementById('score');
-  let submitBtn = document.getElementById('submitBtn');
-  let quitBtn = document.getElementById('quitBtn');
+  const timerEl = document.getElementById('timer');
+  const questionEl = document.getElementById('question');
+  const answerEl = document.getElementById('answer');
+  const scoreEl = document.getElementById('score');
+  const submitBtn = document.getElementById('submitBtn');
+  const quitBtn = document.getElementById('quitBtn');
 
-  let time=60, score=0;
+  let time = 60, score = 0;
+  let current = {};
+
   function gen(){
     const a = Math.floor(Math.random()*11);
     const b = Math.floor(Math.random()*11);
     const ops = ['+','-','*'];
     const op = ops[Math.floor(Math.random()*ops.length)];
-    let q = `${a} ${op} ${b}`;
+    const q = `${a} ${op} ${b}`;
+    const ans = eval(q);
+    current = { q, ans };
     questionEl.textContent = q;
-    return {q,ans: eval(q)};
+    answerEl.value = '';
+    answerEl.focus();
   }
-  let current = gen();
 
-  let interval = setInterval(()=> {
+  const interval = setInterval(()=> {
     time--;
     timerEl.textContent = time;
-    if(time<=0) endTimeout();
+    if(time <= 0) endTimeout();
   },1000);
 
   function endTimeout(){
@@ -61,26 +64,27 @@
     window.spHelpers.gameEnd(false,'Time up');
   }
 
-  submitBtn.addEventListener('click', ()=>{
+  function submitAnswer(){
     const v = Number(answerEl.value);
     if(isNaN(v)) return;
     if(v === current.ans){
       score++; scoreEl.textContent = score;
-      // small animation
-      questionEl.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:300});
-      current = gen();
-      answerEl.value='';
-      answerEl.focus();
+      gen();
     } else {
       answerEl.value='';
       answerEl.focus();
     }
-  });
+  }
+
+  submitBtn.addEventListener('click', submitAnswer);
+  answerEl.addEventListener('keydown', (e)=> { if(e.key==='Enter') submitAnswer(); });
 
   quitBtn.addEventListener('click', ()=> {
     clearInterval(interval);
     window.location='index.html';
   });
+
+  gen();
 </script>
 </body>
 </html>
