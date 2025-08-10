@@ -13,9 +13,9 @@ let spinAngleStart = 0;
 let spinTime = 0;
 let spinTimeTotal = 0;
 
-// Draw the wheel
+// Draw wheel function
 function drawWheel() {
-    ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+    ctx.clearRect(0, 0, 400, 400);
     for (let i = 0; i < segments.length; i++) {
         const angle = startAngle + i * arc;
         ctx.fillStyle = colors[i];
@@ -33,18 +33,20 @@ function drawWheel() {
         ctx.fillText(segments[i], 110, 10);
         ctx.restore();
     }
-    // Arrow
+
+    // Pointer arrow
     ctx.fillStyle = "black";
     ctx.beginPath();
-    ctx.moveTo(200 - 10, 0);
-    ctx.lineTo(200 + 10, 0);
+    ctx.moveTo(190, 0);
+    ctx.lineTo(210, 0);
     ctx.lineTo(200, 40);
+    ctx.closePath();
     ctx.fill();
 }
 
-// Spin animation
+// Spin logic
 function rotateWheel() {
-    spinTime += 30;
+    spinTime += 20;
     if (spinTime >= spinTimeTotal) {
         stopRotateWheel();
         return;
@@ -52,13 +54,12 @@ function rotateWheel() {
     const spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
     startAngle += (spinAngle * Math.PI / 180);
     drawWheel();
-    spinTimeout = setTimeout(rotateWheel, 30);
+    spinTimeout = setTimeout(rotateWheel, 20);
 }
 
-// Ease out function for smooth stop
 function easeOut(t, b, c, d) {
-    const ts = (t /= d) * t;
-    const tc = ts * t;
+    let ts = (t /= d) * t;
+    let tc = ts * t;
     return b + c * (tc + -3 * ts + 3 * t);
 }
 
@@ -66,14 +67,14 @@ function stopRotateWheel() {
     clearTimeout(spinTimeout);
     const degrees = startAngle * 180 / Math.PI + 90;
     const arcd = arc * 180 / Math.PI;
-    const index = Math.floor((360 - (degrees % 360)) / arcd);
+    const index = Math.floor((360 - (degrees % 360)) / arcd) % segments.length;
     resultText.innerText = "You got: " + segments[index];
 }
 
 spinBtn.addEventListener("click", () => {
-    spinAngleStart = Math.random() * 10 + 10;
+    spinAngleStart = Math.random() * 10 + 10; // initial speed
     spinTime = 0;
-    spinTimeTotal = Math.random() * 3000 + 4000;
+    spinTimeTotal = Math.random() * 3000 + 4000; // total spin time
     rotateWheel();
 });
 
