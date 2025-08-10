@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Guess Game</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-bg">
+  <main class="centered-container game-page">
+    <div class="game-card card">
+      <div class="game-header" style="width:100%;">
+        <div><h2>Guess Game</h2><p class="note">Guess the number (0–100). Hints will be shown.</p></div>
+        <div class="timer" id="timer">60</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;">
+        <div id="hint" style="font-size:22px;font-weight:600">Make a guess!</div>
+        <input id="guessInput" placeholder="Enter a number" style="padding:10px;border-radius:8px;border:1px solid #dbe7ff;width:220px" />
+        <div>
+          <button id="tryBtn" class="btn primary">Try</button>
+          <button id="quitBtn" class="btn">Quit</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+<script src="script.js"></script>
+<script>
+  if(!sessionStorage.getItem('sp_user')) location.href='login.html';
+  let timerEl = document.getElementById('timer');
+  let hint = document.getElementById('hint');
+  let guessInput = document.getElementById('guessInput');
+  let tryBtn = document.getElementById('tryBtn');
+  let quitBtn = document.getElementById('quitBtn');
+
+  const target = Math.floor(Math.random()*101);
+  let time = 60;
+  let interval = setInterval(()=> {
+    time--;
+    timerEl.textContent = time;
+    if(time<=0) endTimeout();
+  },1000);
+
+  function endTimeout(){
+    clearInterval(interval);
+    guessInput.disabled = true;
+    tryBtn.disabled = true;
+    window.spHelpers.gameEnd(false,'Time up');
+  }
+
+  tryBtn.addEventListener('click', ()=>{
+    const v = Number(guessInput.value);
+    if(isNaN(v)) return;
+    if(v === target){
+      clearInterval(interval);
+      // show success message (on screen)
+      hint.textContent = `Correct! The number was ${target}.`;
+      window.spHelpers.gameEnd(true,'You guessed it!');
+    } else if(v < target){
+      hint.textContent = 'Too low! Try bigger.';
+    } else {
+      hint.textContent = 'Too high! Try smaller.';
+    }
+    guessInput.value='';
+    guessInput.focus();
+  });
+
+  quitBtn.addEventListener('click', ()=> {
+    clearInterval(interval);
+    window.location='index.html';
+  });
+</script>
+</body>
+</html>
